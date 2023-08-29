@@ -1,0 +1,42 @@
+#!/bin/bash
+
+date
+
+# Create empty files for the input and output
+> order;> perl_out;> python_out
+
+# Generate 100 random combinations of numbers between 0 and 10
+for x in {1..100}; do
+    w=$((RANDOM % 11))
+    x=$((RANDOM % 11))
+    y=$((RANDOM % 1))
+    z=$((RANDOM % 1))
+
+    a=$((RANDOM % 11))
+    b=$((RANDOM % 11))
+    c=$((RANDOM % 1))
+    d=$((RANDOM % 1))
+
+    # Create the input string for the Perl and Python scripts
+    order="$w 0 $x $y $z  $a 0 $b $c $d"
+
+    # Write the input string to a file
+    echo "$order" >> order
+
+    # Run the Perl script with the input string and write the output to a file
+    time ./aacalc.pl $order >> perl_out 
+
+    # Run the Python script with the input string and write the output to a file
+    time ./aacalc.py $order >> python_out 
+    wait
+    wc -l order
+
+    # Compare the output of the Perl and Python scripts
+    if (! diff -q perl_out python_out); then
+        echo "Perl and Python output are different"
+        tail -n 1 order perl_out python_out
+        exit 1
+    fi
+done
+echo "Perl and Python output are the same"
+date

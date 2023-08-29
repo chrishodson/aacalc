@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 use Storable qw(dclone);
 use Memoize;
+use strict;
+use warnings;
+use Data::Dumper;
 
 memoize('binPDF');
 
@@ -15,11 +18,13 @@ memoize('binPDF');
 
 memoize('doRound');
 
-@possible_units = ( 'Infantry', 'Artillary', 'Tanks', 'Fighters', 'Bombers' );
+my @possible_units = ( 'Infantry', 'Artillary', 'Tanks', 'Fighters', 'Bombers' );
 
 #------------------------------
-$VERBOSE  = 0;
-$VERBOSE2 = 0;
+my $VERBOSE  = 0;
+my $VERBOSE2 = 0;
+
+my %troops;
 
 if (@ARGV) {
     %troops = long_units(@ARGV);
@@ -39,6 +44,8 @@ else {
 }
 
 #------------------------------
+
+my %odds;
 
 $odds{'Infantry'}{'Att'}  = 1;
 $odds{'Infantry'}{'Def'}  = 2;
@@ -65,24 +72,35 @@ my $promotions = min( $troops{'Att'}{'Infantry'}, $troops{'Att'}{'Artillary'} );
 $troops{'Att'}{'Infantry'} -= $promotions;
 $troops{'Att'}{'Artillary'} += $promotions;
 
-( $win_pct, $lose_pct, $tie_pct ) = doRound( short_units(%troops) );
+# exit if not being called directly
+return (1==1) if caller;
 
-print( 'WIN,LOSE,TIE', "\n" );
-my $total = ( $win_pct + $lose_pct + $tie_pct );
+my ( $win_pct, $lose_pct, $tie_pct ) = doRound( short_units(%troops) );
+( $win_pct, $lose_pct, $tie_pct ) = normalize( $win_pct, $lose_pct, $tie_pct );
+
+print( 'WIN,LOSE,TIE', "\n" ) if $VERBOSE;
 print(
     join ",",
     (
-        $win_pct / $total * 100,
-        $lose_pct / $total * 100,
-        $tie_pct / $total * 100
+        sprintf("%.2f", $win_pct ),
+        sprintf("%.2f", $lose_pct ),
+        sprintf("%.2f", $tie_pct )
     ),
-    "\n"
-);
+    
+); print("\n");
 
 #print ((join ",", ($win_pct,$lose_pct,$tie_pct)), "\n");
 ### End Main ##########################################################
 exit int( $win_pct / ( $win_pct + $lose_pct ) * 100 );
 
+sub normalize {
+    my @array = @_;
+    my $sum   = sum(@array) / 100;
+    foreach my $x (@array) { $x /= $sum }
+    return @array;
+}   
+
+my $round = 0;
 sub doRound {
     print "Round\t", $round++, "\n" if ( $VERBOSE and not( $round % 10 ) );
     print "Called doRound(@_)", "\n" if $VERBOSE2;
@@ -93,6 +111,8 @@ sub doRound {
     #figure out if someone is dead
     my $Att_units_alive = 0;
     my $Def_units_alive = 0;
+
+    my $unittype;
 
     foreach $unittype (@possible_units) {
         $Att_units_alive += $units{'Att'}{$unittype};
@@ -128,13 +148,13 @@ sub doRound {
     my %max_hits;
     my %hits_prob;
     my @hits;
-    foreach $side ( 'Att', 'Def' ) {
+    foreach my $side ( 'Att', 'Def' ) {
         $max_hits{$side} = sum( values %{ $units{$side} } );
-        foreach $infantry_hits ( 0 .. $units{$side}{'Infantry'} ) {
-            foreach $artillary_hits ( 0 .. $units{$side}{'Artillary'} ) {
-                foreach $tank_hits ( 0 .. $units{$side}{'Tanks'} ) {
-                    foreach $fighter_hits ( 0 .. $units{$side}{'Fighters'} ) {
-                        foreach $bomber_hits ( 0 .. $units{$side}{'Bombers'} ) {
+        foreach my $infantry_hits ( 0 .. $units{$side}{'Infantry'} ) {
+            foreach my $artillary_hits ( 0 .. $units{$side}{'Artillary'} ) {
+                foreach my $tank_hits ( 0 .. $units{$side}{'Tanks'} ) {
+                    foreach my $fighter_hits ( 0 .. $units{$side}{'Fighters'} ) {
+                        foreach my $bomber_hits ( 0 .. $units{$side}{'Bombers'} ) {
 
                             $hits_prob{$side}[ $infantry_hits +
                               $artillary_hits +
@@ -168,7 +188,7 @@ sub doRound {
         foreach $dhp ( 0 .. $max_hits{'Def'} ) {
             next if ( $ahp == 0 and $dhp == 0 );
             $odds = $hits_prob{'Att'}[$ahp] * $hits_prob{'Def'}[$dhp];
-            ( $return_win, $return_lose, $return_tie ) =
+            my ( $return_win, $return_lose, $return_tie ) =
               doRound(
                 short_units( casualties( $ahp, $dhp, dclone( \%units ) ) ) );
 
@@ -184,21 +204,20 @@ sub doRound {
 }
 
 sub casualties {
-
     #Decide on which units to remove
     #($hits{'Att'},$hits{'Def'},%cas_units) = @_;
     my %hits;
 
     # Reverse Attack and defence hits.  Before it meant "how many hits did
     # that side get."  Now it means "how many times did that side get hit."
-    ( $hits{'Def'} ) = shift @_;
-    ( $hits{'Att'} ) = shift @_;
-    @orig_units = (@_);
+    $hits{'Def'}  = shift @_;
+    $hits{'Att'}  = shift @_;
+    my @orig_units = (@_);
     my %cas_units;
     my $reduce;
 
-    foreach $side ( 'Att', 'Def' ) {
-        foreach $trooptype (@possible_units) {
+    foreach my $side ( 'Att', 'Def' ) {
+        foreach my $trooptype (@possible_units) {
             $reduce =
               min( $hits{$side}, $orig_units[0]->{$side}{$trooptype} ) + 0;
             $cas_units{$side}{$trooptype} =
@@ -210,11 +229,13 @@ sub casualties {
 }
 
 sub max {
+    die "max() called with wrong number of arguments" if @_ != 2;
     return $_[0] if $_[0] >= $_[1];
     return $_[1];
 }
 
 sub min {
+    die "min() called with wrong number of arguments" if @_ != 2;
     return $_[0] if $_[0] <= $_[1];
     return $_[1];
 }
@@ -235,18 +256,6 @@ sub binPDF {
       power( 1 - $P, $N - $K );
 }
 
-sub binPDF2 {
-    my ( $P, $N, $K ) = @_;
-    print "$P,$N,$K\n";
-    return 1 if ( $N == 0 );
-    return power( 1 - $P, $N ) if ( $K == 0 );
-    return factorial($N) /
-      ( factorial($K) * factorial( $N - $K ) ) *
-      power( $P,     $K ) *
-      power( 1 - $P, $N - $K );
-
-}
-
 sub factorial {
     my $n = shift;
     return undef if $n < 0;
@@ -260,14 +269,14 @@ sub power {
 
 sub sum {
     my (@array) = @_;
-    my $sum;
-    $sum = 0;
+    my $sum = 0;
     while (@array) { $sum += pop(@array) }
     return $sum;
 }
 
 sub short_units {
     my %unit_hash = @_;
+    my ($side, $unit);
     my @return_array;
 
     foreach $side ( 'Att', 'Def' ) {
@@ -279,6 +288,7 @@ sub short_units {
 }
 
 sub short_units_hdr {
+    my ($side, $unit);
     my @return_array;
     foreach $side ( 'Att', 'Def' ) {
         foreach $unit (@possible_units) {
@@ -291,6 +301,7 @@ sub short_units_hdr {
 sub long_units {
     my @short_units = @_;
     my %return_hash;
+    my ($side, $unit);
 
     foreach $side ( 'Att', 'Def' ) {
         foreach $unit (@possible_units) {
@@ -304,6 +315,7 @@ sub print_results {
     my @p_results   = (@_);
     my $num_records = ( 1 + 1 + ( @possible_units * 2 ) );
     my $num_rows    = ( @p_results + 0 ) / $num_records;
+    my ($x, $y);
 
     foreach $x ( 1 .. $num_rows ) {
         my @curr_row = ();
