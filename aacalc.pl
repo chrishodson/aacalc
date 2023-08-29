@@ -231,20 +231,8 @@ sub binPDF {
     return power( 1 - $P, $N ) if ( $K == 0 );
     return factorial($N) /
       ( factorial($K) * factorial( $N - $K ) ) *
-      power( $P,     $K ) *
+      power( $P, $K ) *
       power( 1 - $P, $N - $K );
-}
-
-sub binPDF2 {
-    my ( $P, $N, $K ) = @_;
-    print "$P,$N,$K\n";
-    return 1 if ( $N == 0 );
-    return power( 1 - $P, $N ) if ( $K == 0 );
-    return factorial($N) /
-      ( factorial($K) * factorial( $N - $K ) ) *
-      power( $P,     $K ) *
-      power( 1 - $P, $N - $K );
-
 }
 
 sub factorial {
