@@ -1,0 +1,35 @@
+#!/bin/bash
+date
+>order ; >perl_out ; >python_out
+iterations=0
+
+# Generate all possible combinations of 5 numbers between 0 and 4
+for x in `seq 0 4`; do
+    for y in `seq 0 4`; do
+        for z in `seq 0 4`; do
+            for i in `seq 0 4`; do
+                for j in `seq 0 4`; do
+                    order="$x $y $z $i $j  $i $j $x $y $z"
+                    # Write the combination to a file
+                    echo "$order" >> order
+                    
+                    # Run the Perl script with the combination as input and write the output to a file
+                    ./aacalc.pl $order >> perl_out &
+                    
+                    # Run the Python script with the combination as input and write the output to a file
+                    ./aacalc.py $order >> python_out &
+                    wait
+                    if (! diff -q perl_out python_out); then
+                        echo "Perl and Python output are different"
+                        tail -n 1 order perl_out python_out
+                        exit 1
+                    fi
+                    # Print the percentage completed
+                    iteration=$((iteration + 1))
+                    echo -ne "$iteration / 3125\r"
+                done
+            done
+        done
+    done ; date
+done
+date
