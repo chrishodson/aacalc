@@ -212,4 +212,5 @@ if __name__ == '__main__':
             casualties, 
             doRound,
         ]:
-            print(func.__name__, "   \t", func.cache_info())  # pylint: disable=all
+            if callable(func) and hasattr(func, 'cache_info'):
+                print(func.__name__, "   \t", func.cache_info()) # pylint: disable=all
