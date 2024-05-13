@@ -42,76 +42,76 @@ class TestAACalc(unittest.TestCase):
 
     def test_init_no_input(self):
         units = Units()
-        expected_result = {'Att': {'Infantry': 0, 'Artillary': 0, 'Tanks': 0, 'Fighters': 0, 'Bombers': 0},
-                           'Def': {'Infantry': 0, 'Artillary': 0, 'Tanks': 0, 'Fighters': 0, 'Bombers': 0}}
+        expected_result = {'Att': {'Infantry': 0, 'Artillery': 0, 'Tanks': 0, 'Fighters': 0, 'Bombers': 0},
+                           'Def': {'Infantry': 0, 'Artillery': 0, 'Tanks': 0, 'Fighters': 0, 'Bombers': 0}}
         self.assertEqual(units.att, expected_result['Att'])
         self.assertEqual(units.def_, expected_result['Def'])
 
     def test_init_list_input(self):
         input_list = [10, 5, 3, 2, 1, 8, 3, 2, 1, 0]
-        expected_result = {'Att': {'Infantry': 10, 'Artillary': 5, 'Tanks': 3, 'Fighters': 2, 'Bombers': 1},
-                           'Def': {'Infantry': 8, 'Artillary': 3, 'Tanks': 2, 'Fighters': 1, 'Bombers': 0}}
+        expected_result = {'Att': {'Infantry': 10, 'Artillery': 5, 'Tanks': 3, 'Fighters': 2, 'Bombers': 1},
+                           'Def': {'Infantry': 8, 'Artillery': 3, 'Tanks': 2, 'Fighters': 1, 'Bombers': 0}}
         units = Units(input_list)
         self.assertEqual(units.att, expected_result['Att'])
         self.assertEqual(units.def_, expected_result['Def'])
 
     def test_init_tuple_input(self):
         input_list = (10, 5, 3, 2, 1, 8, 3, 2, 1, 1)
-        expected_result = {'Att': {'Infantry': 10, 'Artillary': 5, 'Tanks': 3, 'Fighters': 2, 'Bombers': 1},
-                           'Def': {'Infantry': 8, 'Artillary': 3, 'Tanks': 2, 'Fighters': 1, 'Bombers': 1}}
+        expected_result = {'Att': {'Infantry': 10, 'Artillery': 5, 'Tanks': 3, 'Fighters': 2, 'Bombers': 1},
+                           'Def': {'Infantry': 8, 'Artillery': 3, 'Tanks': 2, 'Fighters': 1, 'Bombers': 1}}
         units = Units(input_list)
         self.assertEqual(units.att, expected_result['Att'])
         self.assertEqual(units.def_, expected_result['Def'])
 
     def test_init_dict_input(self):
         input_dict = {'Att': {'Infantry': 5, 'Tanks': 3}, 'Def': {'Infantry': 2, 'Tanks': 4}}
-        expected_result = {'Att': {'Infantry': 5, 'Artillary': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0},
-                           'Def': {'Infantry': 2, 'Artillary': 0, 'Tanks': 4, 'Fighters': 0, 'Bombers': 0}}
+        expected_result = {'Att': {'Infantry': 5, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0},
+                           'Def': {'Infantry': 2, 'Artillery': 0, 'Tanks': 4, 'Fighters': 0, 'Bombers': 0}}
         units = Units(input_dict)
         self.assertEqual(units.att, expected_result['Att'])
         self.assertEqual(units.def_, expected_result['Def'])
 
 
     def test_casualties1(self):
-        units = Units({'Att': {'Infantry': 10, 'Artillary': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0},
-                       'Def': {'Infantry': 10, 'Artillary': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0}})
+        units = Units({'Att': {'Infantry': 10, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0},
+                       'Def': {'Infantry': 10, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0}})
         att_kills = 3
         def_kills = 3
-        expected_result = {'Att': {'Infantry': 7, 'Artillary': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0},
-                           'Def': {'Infantry': 7, 'Artillary': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0}}
+        expected_result = {'Att': {'Infantry': 7, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0},
+                           'Def': {'Infantry': 7, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0}}
         result = casualties(att_kills, def_kills, units)
         self.assertEqual(result.__dict__(), expected_result)
 
     def test_casualties2(self):
         units = Units(
-            {'Att': {'Infantry': 10, 'Artillary': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0},
-             'Def': {'Infantry': 10, 'Artillary': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0}}
+            {'Att': {'Infantry': 10, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0},
+             'Def': {'Infantry': 10, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0}}
         )
         att_kills = 1
         def_kills = 3
-        expected_result = {'Att': {'Infantry': 7, 'Artillary': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0},
-                           'Def': {'Infantry': 9, 'Artillary': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0}}
+        expected_result = {'Att': {'Infantry': 7, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0},
+                           'Def': {'Infantry': 9, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0}}
         self.assertEqual(casualties(att_kills, def_kills, units).__dict__(), expected_result)
 
     def test_casualties3(self):
         units = Units(
-            {'Att': {'Infantry': 10, 'Artillary': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0},
-             'Def': {'Infantry': 10, 'Artillary': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0}}
+            {'Att': {'Infantry': 10, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0},
+             'Def': {'Infantry': 10, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0}}
         )
         att_kills = 11
         def_kills = 1
-        expected_result = {'Att': {'Infantry': 9, 'Artillary': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0}, 'Def': {'Infantry': 0, 'Artillary': 0, 'Tanks': 2, 'Fighters': 0, 'Bombers': 0}}
+        expected_result = {'Att': {'Infantry': 9, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0}, 'Def': {'Infantry': 0, 'Artillery': 0, 'Tanks': 2, 'Fighters': 0, 'Bombers': 0}}
         self.assertEqual(casualties(att_kills, def_kills, units).__dict__(), expected_result)
 
     def test_casualties4(self):
         units = Units(
-            {'Att': {'Infantry': 10, 'Artillary': 0, 'Tanks': 3, 'Fighters': 1, 'Bombers': 0},
-             'Def': {'Infantry': 10, 'Artillary': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 1}}
+            {'Att': {'Infantry': 10, 'Artillery': 0, 'Tanks': 3, 'Fighters': 1, 'Bombers': 0},
+             'Def': {'Infantry': 10, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 1}}
         )
         att_kills = 2
         def_kills = 2
-        expected_result = {'Att': {'Infantry': 8, 'Artillary': 0, 'Tanks': 3, 'Fighters': 1, 'Bombers': 0},
-                           'Def': {'Infantry': 8, 'Artillary': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 1}}
+        expected_result = {'Att': {'Infantry': 8, 'Artillery': 0, 'Tanks': 3, 'Fighters': 1, 'Bombers': 0},
+                           'Def': {'Infantry': 8, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 1}}
         self.assertEqual(casualties(att_kills, def_kills, units).__dict__(), expected_result)
 
 
