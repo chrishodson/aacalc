@@ -118,7 +118,6 @@ def binPDF(P: float, N: int, K: int) -> float:
         return (1 - P) ** N
     return comb(N, K) * P ** K * (1 - P) ** (N - K)
 
-@lru_cache(maxsize=None)
 def casualties(att_hits, def_hits, orig_units):
     """
     Applies the hits to the units and returns the new units.
