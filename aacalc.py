@@ -156,7 +156,6 @@ def doRound(*args):
 
     max_hits = {}
     hits_prob = {}
-    # Do we need to copy units to a new object?
 
     for side in ['Att', 'Def']:
         hits_prob[side] = [0] * (units.alive(side)+1)
@@ -205,8 +204,8 @@ if __name__ == '__main__':
 
     if VERBOSE & 0b01:  # check if the first bit is set
         for func in [
-            binPDF, 
-            casualties, 
+            binPDF,
+            casualties,
             doRound,
         ]:
             if callable(func) and hasattr(func, 'cache_info'):
