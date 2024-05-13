@@ -67,21 +67,20 @@ $troops{'Att'}{'Artillary'} += $promotions;
 
 ( $win_pct, $lose_pct, $tie_pct ) = doRound( short_units(%troops) );
 
-print( 'WIN,LOSE,TIE', "\n" );
+#print( 'WIN,LOSE,TIE', "\n" );
 my $total = ( $win_pct + $lose_pct + $tie_pct );
 print(
-    join ",",
+    (join ",",
     (
-        $win_pct / $total * 100,
-        $lose_pct / $total * 100,
-        $tie_pct / $total * 100
-    ),
-    "\n"
+        sprintf("%.2f", $win_pct / $total * 100),
+        sprintf("%.2f", $lose_pct / $total * 100),
+        sprintf("%.2f", $tie_pct / $total * 100)
+    )),"\n"
 );
 
 #print ((join ",", ($win_pct,$lose_pct,$tie_pct)), "\n");
 ### End Main ##########################################################
-exit int( $win_pct / ( $win_pct + $lose_pct ) * 100 );
+exit int( $win_pct / ( $win_pct + $lose_pct + 1) * 100 );
 
 sub doRound {
     print "Round\t", $round++, "\n" if ( $VERBOSE and not( $round % 10 ) );
