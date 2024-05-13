@@ -81,7 +81,7 @@ class Units:
         return_code = self.__str__()
         return hash(return_code)
 
-    def __dict__(self):
+    def dict(self):
         return {'Att': self.att, 'Def': self.def_}
 
     def values(self):

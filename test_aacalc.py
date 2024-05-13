@@ -80,7 +80,7 @@ class TestAACalc(unittest.TestCase):
         expected_result = {'Att': {'Infantry': 7, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0},
                            'Def': {'Infantry': 7, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0}}
         result = casualties(att_kills, def_kills, units)
-        self.assertEqual(result.__dict__(), expected_result)
+        self.assertEqual(result.dict(), expected_result)
 
     def test_casualties2(self):
         units = Units(
@@ -91,7 +91,7 @@ class TestAACalc(unittest.TestCase):
         def_kills = 3
         expected_result = {'Att': {'Infantry': 7, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0},
                            'Def': {'Infantry': 9, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0}}
-        self.assertEqual(casualties(att_kills, def_kills, units).__dict__(), expected_result)
+        self.assertEqual(casualties(att_kills, def_kills, units).dict(), expected_result)
 
     def test_casualties3(self):
         units = Units(
@@ -101,7 +101,7 @@ class TestAACalc(unittest.TestCase):
         att_kills = 11
         def_kills = 1
         expected_result = {'Att': {'Infantry': 9, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 0}, 'Def': {'Infantry': 0, 'Artillery': 0, 'Tanks': 2, 'Fighters': 0, 'Bombers': 0}}
-        self.assertEqual(casualties(att_kills, def_kills, units).__dict__(), expected_result)
+        self.assertEqual(casualties(att_kills, def_kills, units).dict(), expected_result)
 
     def test_casualties4(self):
         units = Units(
@@ -112,7 +112,7 @@ class TestAACalc(unittest.TestCase):
         def_kills = 2
         expected_result = {'Att': {'Infantry': 8, 'Artillery': 0, 'Tanks': 3, 'Fighters': 1, 'Bombers': 0},
                            'Def': {'Infantry': 8, 'Artillery': 0, 'Tanks': 3, 'Fighters': 0, 'Bombers': 1}}
-        self.assertEqual(casualties(att_kills, def_kills, units).__dict__(), expected_result)
+        self.assertEqual(casualties(att_kills, def_kills, units).dict(), expected_result)
 
 
     def test_doRound(self):
