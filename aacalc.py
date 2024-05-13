@@ -143,8 +143,6 @@ def doRound(*args):
         units = args[0]
     elif len(args) == 10:
         units = Units(args)
-        #units = {'Att': {'Infantry': args[0], 'Artillery': args[1], 'Tanks': args[2], 'Fighters': args[3], 'Bombers': args[4]},
-        #         'Def': {'Infantry': args[5], 'Artillery': args[6], 'Tanks': args[7], 'Fighters': args[8], 'Bombers': args[9]}}
     else:
         raise ValueError("doRound expects either 1 dictionary or 10 items")
 
@@ -189,21 +187,21 @@ def main(units):
     """
     prob_win, prob_lose, prob_tie = doRound(units)
     total = prob_win + prob_lose + prob_tie
-    print('{:.2f},{:.2f},{:.2f}'.format((prob_win / total) * 100, (prob_lose / total) * 100, (prob_tie / total) * 100))
+    print(f"{(prob_win / total) * 100:.2f},{(prob_lose / total) * 100:.2f},{(prob_tie / total) * 100:.2f}")
 
 if __name__ == '__main__':
     import sys
     if len(sys.argv) == 1:
-        units = Units({
+        input_units = Units({
             'Att': {'Infantry': 10, 'Tanks': 3},
             'Def': {'Infantry': 10, }
         })
     elif len(sys.argv) == 11:
-        units = Units([int(arg) for arg in sys.argv[1:]])
+        input_units = Units([int(arg) for arg in sys.argv[1:]])
     else:
         print('Usage: python aacalc.py [att_inf att_art att_tan att_fig att_bom def_inf def_art def_tan def_fig def_bom]')
         sys.exit(1)
-    main(units)
+    main(input_units)
 
     if VERBOSE & 0b01:  # check if the first bit is set
         for func in [
@@ -212,4 +210,4 @@ if __name__ == '__main__':
             doRound,
         ]:
             if callable(func) and hasattr(func, 'cache_info'):
-                print(func.__name__, "   \t", func.cache_info()) # pylint: disable=all
+                print(func.__name__, "   \t", func.cache_info()) # pylint: disable=no-member disable=no-value-for-parameter
