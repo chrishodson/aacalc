@@ -15,7 +15,7 @@ memoize('binPDF');
 
 memoize('doRound');
 
-@possible_units = ( 'Infantry', 'Artillary', 'Tanks', 'Fighters', 'Bombers' );
+@possible_units = ( 'Infantry', 'Artillery', 'Tanks', 'Fighters', 'Bombers' );
 
 #------------------------------
 $VERBOSE  = 0;
@@ -26,13 +26,13 @@ if (@ARGV) {
 }
 else {
     $troops{'Att'}{'Infantry'}  = 10;
-    $troops{'Att'}{'Artillary'} = 0;
+    $troops{'Att'}{'Artillery'} = 0;
     $troops{'Att'}{'Tanks'}     = 3;
     $troops{'Att'}{'Fighters'}  = 0;
     $troops{'Att'}{'Bombers'}   = 0;
 
     $troops{'Def'}{'Infantry'}  = 10;
-    $troops{'Def'}{'Artillary'} = 0;
+    $troops{'Def'}{'Artillery'} = 0;
     $troops{'Def'}{'Tanks'}     = 0;
     $troops{'Def'}{'Fighters'}  = 0;
     $troops{'Def'}{'Bombers'}   = 0;
@@ -42,8 +42,8 @@ else {
 
 $odds{'Infantry'}{'Att'}  = 1;
 $odds{'Infantry'}{'Def'}  = 2;
-$odds{'Artillary'}{'Att'} = 2;
-$odds{'Artillary'}{'Def'} = 2;
+$odds{'Artillery'}{'Att'} = 2;
+$odds{'Artillery'}{'Def'} = 2;
 $odds{'Tanks'}{'Att'}     = 3;
 $odds{'Tanks'}{'Def'}     = 2;
 $odds{'Fighters'}{'Att'}  = 3;
@@ -55,15 +55,15 @@ $odds{'Bombers'}{'Def'}   = 1;
 print STDERR ( ( join ',', 'Outcome', 'Odds', short_units_hdr() ), "\n" )
   if $VERBOSE;
 
-# Here we do the "promotion" of troops in the presense of artillary
-# Since these troops attack as artillary, we just make them artillary
+# Here we do the "promotion" of troops in the presence of artillery
+# Since these troops attack as artillery, we just make them artillery
 # and keep track of things so we can reduce the number at the end (if
 # any are left)
 my $orig_infantry = $troops{'Att'}{'Infantry'};    #save this
 
-my $promotions = min( $troops{'Att'}{'Infantry'}, $troops{'Att'}{'Artillary'} );
+my $promotions = min( $troops{'Att'}{'Infantry'}, $troops{'Att'}{'Artillery'} );
 $troops{'Att'}{'Infantry'} -= $promotions;
-$troops{'Att'}{'Artillary'} += $promotions;
+$troops{'Att'}{'Artillery'} += $promotions;
 
 ( $win_pct, $lose_pct, $tie_pct ) = doRound( short_units(%troops) );
 
@@ -130,13 +130,13 @@ sub doRound {
     foreach $side ( 'Att', 'Def' ) {
         $max_hits{$side} = sum( values %{ $units{$side} } );
         foreach $infantry_hits ( 0 .. $units{$side}{'Infantry'} ) {
-            foreach $artillary_hits ( 0 .. $units{$side}{'Artillary'} ) {
+            foreach $artillery_hits ( 0 .. $units{$side}{'Artillery'} ) {
                 foreach $tank_hits ( 0 .. $units{$side}{'Tanks'} ) {
                     foreach $fighter_hits ( 0 .. $units{$side}{'Fighters'} ) {
                         foreach $bomber_hits ( 0 .. $units{$side}{'Bombers'} ) {
 
                             $hits_prob{$side}[ $infantry_hits +
-                              $artillary_hits +
+                              $artillery_hits +
                               $tank_hits +
                               $fighter_hits +
                               $bomber_hits ] += binPDF(
@@ -144,9 +144,9 @@ sub doRound {
                                 $units{$side}{'Infantry'},
                                 $infantry_hits
                               ) * binPDF(
-                                $odds{'Artillary'}{$side} / 6,
-                                $units{$side}{'Artillary'},
-                                $artillary_hits
+                                $odds{'Artillery'}{$side} / 6,
+                                $units{$side}{'Artillery'},
+                                $artillery_hits
                               ) * binPDF( $odds{'Tanks'}{$side} / 6,
                                 $units{$side}{'Tanks'}, $tank_hits ) * binPDF(
                                 $odds{'Fighters'}{$side} / 6,
