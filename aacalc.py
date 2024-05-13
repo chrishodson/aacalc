@@ -35,10 +35,10 @@ from functools import lru_cache
 
 # Global constants
 VERBOSE = 0
-POSSIBLE_UNITS = ['Infantry', 'Artillary', 'Tanks', 'Fighters', 'Bombers']
+POSSIBLE_UNITS = ['Infantry', 'Artillery', 'Tanks', 'Fighters', 'Bombers']
 ODDS = {
     'Infantry': {'Att': 1, 'Def': 2},
-    'Artillary': {'Att': 2, 'Def': 2},
+    'Artillery': {'Att': 2, 'Def': 2},
     'Tanks': {'Att': 3, 'Def': 2},
     'Fighters': {'Att': 3, 'Def': 4},
     'Bombers': {'Att': 4, 'Def': 1}
@@ -144,8 +144,8 @@ def doRound(*args):
         units = args[0]
     elif len(args) == 10:
         units = Units(args)
-        #units = {'Att': {'Infantry': args[0], 'Artillary': args[1], 'Tanks': args[2], 'Fighters': args[3], 'Bombers': args[4]},
-        #         'Def': {'Infantry': args[5], 'Artillary': args[6], 'Tanks': args[7], 'Fighters': args[8], 'Bombers': args[9]}}
+        #units = {'Att': {'Infantry': args[0], 'Artillery': args[1], 'Tanks': args[2], 'Fighters': args[3], 'Bombers': args[4]},
+        #         'Def': {'Infantry': args[5], 'Artillery': args[6], 'Tanks': args[7], 'Fighters': args[8], 'Bombers': args[9]}}
     else:
         raise ValueError("doRound expects either 1 dictionary or 10 items")
 
